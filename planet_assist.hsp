@@ -1,0 +1,150 @@
+cls
+screen 0,300,200
+title "ぷらねこアシスタント"
+color 243,151,0:boxf
+
+x = 15
+y = 5
+
+minx = 30
+miny = 65
+
+mesx = 115
+mesy = 123
+
+boxx = 20
+boxy = 50
+
+*main
+	pos x,y //タイトルロゴ位置
+	picload "./object/title.png",1
+	pos x+185 , y //Oops位置
+	picload "./object/oops.png",1
+	pos ginfo_winx-150,ginfo_winy-20 : font "",12,1 : color 255,255,255//credit位置
+	mes "Ver.1.3 project by yosaku"
+	pos minx,miny : font "ＭＳ ゴシック",50,1 : color 0,0,0 //時間位置
+	min = 30 : mes min 
+	pos minx,miny + 50 //猫位置
+	picload "./object/cat.png",1
+	pos x - 10,miny + 85 //吹き出し位置
+	picload "./object/hukidashi.png",1
+
+
+	flg = 1
+	
+	
+*first
+	// 時間セット用ボタン
+	pos minx + 80,miny : objsize 40 //+5位置
+	button gosub "＋５",*add
+	pos minx + 80, miny + 30//-5位置
+	button gosub "－５",*dadd
+	
+	
+	//スタートボタン
+	pos minx + 150 ,miny : objsize 70
+	button gosub "Start !!",*start
+	
+	
+	//セットボタン
+	pos minx + 150 ,miny + 30 : objsize 70
+	button gosub "Set !!",*change
+	
+
+	//セーブボタン
+	pos minx + 150 ,miny + 75
+	button gosub "Save OK?",*save
+	
+	
+	//ストップボタン
+	pos  minx + 70 ,miny + 75 : objsize 60
+	button gosub "Stop ??",*stopp
+	
+	
+	gosub *disp
+	
+	stop
+*start //スタートボタン押下でジャンプ
+	gosub *white_mes
+	if(flg = 0){
+		pos mesx,mesy : font "",12 : color 0,0,0
+		mes "セットボタンを押してください"
+		await 2000
+		gosub *white_mes
+	return
+	}
+	pos mesx,mesy : font "",12 : color 0,0,0
+	mes "■お手伝い中..."
+	minx = min
+	minx *= 60000
+	await minx
+	mmload "./object/btn09.mp3",1,1
+	mmplay 1
+	
+	return
+	
+*change
+	gosub *white_mes
+	gosub *white_min
+	gosub *disp
+	flg = 1
+	return
+	
+*save
+	
+	//アラーム音止める処理
+	//また開始
+	mmstop
+	goto *start
+	return
+	
+	
+*add
+	flg = 0
+	if(min >= 90){
+		pos mesx,mesy : font "",12 : color 0,0,0
+		mes "これ以上増やせません！＞＜"
+		await 1000
+		gosub *white_mes
+	return
+	}
+	pos minx,miny : color 243,151,0 : boxf 20,50,100,110
+	min += 5
+	color 0,120,186 : pos minx,miny : font "ＭＳ ゴシック",50,1
+	mes min
+	return
+	
+*dadd
+	flg = 0
+	if(min < 10){
+		pos mesx,mesy : font "",12 : color 0,0,0
+		mes "これ以上減らせません！＞＜"
+		await 2000
+		gosub *white_mes
+	return
+	}
+	pos minx,miny : color 243,151,0 : boxf 20,50,100,110
+	min -= 5
+	color 0,120,186 : pos minx,miny : font "ＭＳ ゴシック",50,1
+	mes min
+	return
+	
+*white_mes
+	pos mess,mesy : color 243,151,0 : boxf 90,123,300,140 
+	return
+	
+*white_min
+	pos minx,miny : color 243,151,0 : boxf 20,50,100,110
+	return
+	
+*stopp
+	mmstop
+	gosub *white_mes
+	pos mesx,mesy : font "",12 : color 0,0,0
+	mes "■停止中"
+	stop
+	
+*disp
+	pos minx,miny : font "ＭＳ ゴシック",50,1 : color 0,0,0
+	mes min
+	return
